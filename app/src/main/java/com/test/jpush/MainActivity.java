@@ -8,6 +8,7 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
@@ -15,6 +16,8 @@ import cn.jpush.android.api.JPushInterface;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private View mLayout;
+    private Button mStopJpush;
+    private Button mStartJpush;
     NotificationsUtils notificationsUtils = new NotificationsUtils();
 
     @Override
@@ -24,6 +27,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLayout = findViewById(R.id.ll_conversation_prompt);
         mLayout.setOnClickListener(this);
 
+        mStopJpush = (Button) findViewById(R.id.stopJpush);
+        mStopJpush.setOnClickListener(this);
 
     }
 
@@ -73,9 +78,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.ll_conversation_prompt:
                 if (!notificationsUtils.isNotificationEnabled(this)) {
-                    requestPermission();
-//                    toSetting();
+//                    requestPermission();
+                    toSetting();
                 }
+                break;
+            case R.id.stopJpush:
+                //停止推送，重装后才可再次接收
+                JPushInterface.stopPush(getApplicationContext());
                 break;
         }
     }

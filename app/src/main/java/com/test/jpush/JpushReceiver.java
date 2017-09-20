@@ -1,9 +1,14 @@
 package com.test.jpush;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,6 +19,8 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 import cn.jpush.android.api.JPushInterface;
+
+import static android.app.Notification.VISIBILITY_PUBLIC;
 
 /**
  * 自定义接收器
@@ -44,6 +51,8 @@ public class JpushReceiver extends BroadcastReceiver {
                 Log.d(TAG, "[MyReceiver] 接收到推送下来的通知");
                 int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
                 Log.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
+
+                myNotification(context, notifactionId, bundle);
 
             } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
                 Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
@@ -144,4 +153,38 @@ public class JpushReceiver extends BroadcastReceiver {
 //        AppBus.getInstance().post(new CommentUpdateEvent());
     }
 
+    /**
+     * 悬浮通知
+     *
+     * @param context
+     * @param notificationId
+     * @param bundle
+     */
+    private void myNotification(Context context, int notificationId, Bundle bundle) {
+        String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
+        Intent resultIntent1 = new Intent(context, Main2Activity.class);
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder notifyBuilder =
+                new NotificationCompat.Builder(context).setContentTitle("系统消息")
+                        .setContentText(message)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        // 点击消失
+                        .setAutoCancel(true)
+                        // 设置该通知优先级
+                        .setPriority(Notification.PRIORITY_MAX)
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
+//                        .setTicker(mTicker)
+                        // 通知首次出现在通知栏，带上升动画效果的
+                        .setWhen(System.currentTimeMillis())
+                        .setVisibility(VISIBILITY_PUBLIC )
+                        // 通知产生的时间，会在通知信息里显示
+                        // 向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合：
+                        .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_ALL | Notification.DEFAULT_SOUND);
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(context, 0, resultIntent1, PendingIntent.FLAG_UPDATE_CURRENT);
+        notifyBuilder.setContentIntent(resultPendingIntent);
+        mNotifyMgr.notify(notificationId, notifyBuilder.build());
+
+    }
 }
