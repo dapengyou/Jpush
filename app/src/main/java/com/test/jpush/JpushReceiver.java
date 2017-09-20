@@ -74,6 +74,7 @@ public class JpushReceiver extends BroadcastReceiver {
 //                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                context.startActivity(i);
+
     }
 
     // 打印所有的 intent extra 数据
@@ -142,4 +143,5 @@ public class JpushReceiver extends BroadcastReceiver {
 //        //通知主页更新评论提醒
 //        AppBus.getInstance().post(new CommentUpdateEvent());
     }
+
 }
